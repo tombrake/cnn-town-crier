@@ -1,0 +1,57 @@
+{
+  "name": "mss-towncrier",
+  "version": "2.0.0",
+  "description": "MSS Town Crier",
+  "main": "server.js",
+  "directories": {
+    "docs": "./docs",
+    "lib": "./lib",
+    "test": "./test"
+  },
+  "scripts": {
+    "generate-authors": "tools/generate-authors.sh",
+    "generate-changelog": "changelog-maker --group",
+    "generate-coverage": "ENVIRONMENT=local PORT=5000 istanbul cover _mocha -- test/unit -r test/mocha-setup.js && open coverage/lcov-report/index.html",
+    "generate-docs": "rm -rf docs && esdoc -c .esdoc.json",
+    "start": "ENVIRONMENT=local PORT=5000 node server.js",
+    "test": "eslint . && test/validate-json-files.sh",
+    "update-apply": "ncu -u",
+    "update-check": "ncu"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cnnlabs/mss-towncrier.git"
+  },
+  "homepage": "https://github.com/cnnlabs/mss-towncrier#readme",
+  "engines": {
+    "node": "6.2.2"
+  },
+  "dependencies": {
+    "amqplib": "0.4.2",
+    "cnn-hapi": "0.6.0",
+    "debug": "2.2.0",
+    "request": "2.72.0"
+  },
+  "devDependencies": {
+    "chai": "3.5.0",
+    "chai-as-promised": "5.3.0",
+    "changelog-maker": "2.2.3",
+    "esdoc": "0.4.7",
+    "eslint": "2.13.0",
+    "istanbul": "0.4.3",
+    "jq-cli-wrapper": "0.3.0",
+    "jsonlint": "1.6.2",
+    "mocha": "2.5.3",
+    "nock": "8.0.0",
+    "npm-check-updates": "2.6.7"
+  },
+  "keywords": [
+    "cnn",
+    "cnnlabs",
+    "amqp"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+  "url": "https://github.com/cnnlabs/mss-logger/issues"
+}
+}
