@@ -56,5 +56,5 @@ server.route({
 server.start(() => {
     console.log(`Server running at ${server.info.uri}`);
     console.log(JSON.stringify(process.env));
-    require('./.ignore/tasks/start-rabbit-publisher.js');
+    require('./tasks/start-rabbit-publisher.js');
 });
