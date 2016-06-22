@@ -20,51 +20,47 @@
 const nconf = require('nconf'),
     pkg = require('./package.json');
 
-let environment,
-    port,
-    config;
-
-
-
-config = {
-    default: {
-        name: pkg.name,
-        cloudamqpConnectionString: `amqp://${process.env.CLOUDAMQP_AUTH}@red-rhino.rmq.cloudamqp.com/cnn-towncrier`,
-        hypatia: {
-            host: `http://${process.env.HYPATIA_HOST || 'ref.hypatia.services.dmtio.net'}/`
-        }
-    },
-    prod: {
-        hypatia: {
-            host: `http://${process.env.HYPATIA_HOST || 'hypatia.api.cnn.com/'}/`
-        }
-    }
-};
+let config;
 
 
 
 // whitelist environment variables
 nconf.env([
     'CLOUDAMQP_AUTH',
+    'CONTENT_TYPES',
+    'DATA_SOURCES',
     'ENVIRONMENT',
     'HYPATIA_HOST',
-    'PORT'
+    'MONGODB_AUTH',
+    'PORT',
+    'QUERY_LIMIT'
 ]);
 
 
-
-// make sure we have an environment set or die
-environment = nconf.get('ENVIRONMENT');
-port = nconf.get('PORT');
-
-if (typeof environment === 'undefined' || typeof port === 'undefined') {
-    console.error(`ENVIRONMENT and/or PORT are not set. Shutting down.  ENVIRONMENT: ${environment} - PORT: ${port}`);
+// These are required to be set to start up
+if (!nconf.get('ENVIRONMENT') || !nconf.get('PORT') || !nconf.get('CLOUDAMQP_AUTH') || !nconf.get('MONGODB_AUTH')) {
+    console.error('ENVIRONMENT, PORT, MONGODB_AUTH, and/or CLOUDAMQP_AUTH are not set');
     process.exit(1);
 }
 
 
+
+config = {
+    default: {
+        cloudamqpConnectionString: `amqp://${nconf.get('CLOUDAMQP_AUTH')}@red-rhino.rmq.cloudamqp.com/cnn-towncrier`,
+        contentTypes: (nconf.get('CONTENT_TYPES')) ? JSON.parse(nconf.get('CONTENT_TYPES')) : ['article', 'blogpost', 'gallery', 'image', 'video'],
+        dataSources: (nconf.get('DATA_SOURCES')) ? JSON.parse(nconf.get('DATA_SOURCES')) : ['api.greatbigstory.com', 'cnn', 'cnnespanol.cnn.com', 'money'],
+        mongoConnectionString: `mongodb://${nconf.get('MONGODB_AUTH')}@ds025782.mlab.com:25782/mss-towncrier-v2-dev`,
+        name: pkg.name,
+        queryLimit: (nconf.get('QUERY_LIMIT')) ? parseInt(JSON.parse(nconf.get('QUERY_LIMIT'))) : 10
+    },
+    prod: {}
+};
+
+
+
 // load the correct config based on environment
-switch (environment.toLowerCase()) {
+switch (nconf.get('ENVIRONMENT').toLowerCase()) {
     case 'prod':
         nconf.defaults(config.prod);
         break;
