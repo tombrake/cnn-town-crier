@@ -50,7 +50,7 @@ config = {
         contentTypes: (nconf.get('CONTENT_TYPES')) ? JSON.parse(nconf.get('CONTENT_TYPES')) : ['article', 'blogpost', 'gallery', 'image', 'video'],
         dataSources: (nconf.get('DATA_SOURCES')) ? JSON.parse(nconf.get('DATA_SOURCES')) : ['api.greatbigstory.com', 'cnn', 'cnnespanol.cnn.com', 'money'],
         mongoConnectionString: `${nconf.get('MONGODB_AUTH')}@ds025782.mlab.com:25782/mss-towncrier-v2-dev`,
-        name: pkg.name,
+        pollingIntervalMS: (nconf.get('POLLING_INTERVAL_MS')) ? parseInt(nconf.get('POLLING_INTERVAL_MS')) : 1000 * 10,
         queryLimit: (nconf.get('QUERY_LIMIT')) ? parseInt(JSON.parse(nconf.get('QUERY_LIMIT'))) : 10
     },
     prod: {}
