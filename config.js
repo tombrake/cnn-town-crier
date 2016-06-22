@@ -49,7 +49,7 @@ config = {
         cloudamqpConnectionString: `amqp://${nconf.get('CLOUDAMQP_AUTH')}@red-rhino.rmq.cloudamqp.com/cnn-towncrier`,
         contentTypes: (nconf.get('CONTENT_TYPES')) ? JSON.parse(nconf.get('CONTENT_TYPES')) : ['article', 'blogpost', 'gallery', 'image', 'video'],
         dataSources: (nconf.get('DATA_SOURCES')) ? JSON.parse(nconf.get('DATA_SOURCES')) : ['api.greatbigstory.com', 'cnn', 'cnnespanol.cnn.com', 'money'],
-        mongoConnectionString: `mongodb://${nconf.get('MONGODB_AUTH')}@ds025782.mlab.com:25782/mss-towncrier-v2-dev`,
+        mongoConnectionString: `${nconf.get('MONGODB_AUTH')}@ds025782.mlab.com:25782/mss-towncrier-v2-dev`,
         name: pkg.name,
         queryLimit: (nconf.get('QUERY_LIMIT')) ? parseInt(JSON.parse(nconf.get('QUERY_LIMIT'))) : 10
     },
