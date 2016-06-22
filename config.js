@@ -30,7 +30,6 @@ nconf.env([
     'CONTENT_TYPES',
     'DATA_SOURCES',
     'ENVIRONMENT',
-    'HYPATIA_HOST',
     'MONGODB_AUTH',
     'PORT',
     'QUERY_LIMIT'
