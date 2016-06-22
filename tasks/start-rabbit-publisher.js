@@ -18,15 +18,20 @@
 
 const amqp = require('amqplib/callback_api'),
     debug = require('debug')('mss-towncrier:start-rabbit-publisher'),
-    request = require('request'),
+    db = require('../lib/mongodb.js'),
     ContentRetriever = require('cnn-content-retriever'),
     cr = new ContentRetriever(),
-    config = require('../config.js'),
-    connectionString = config.get('cloudamqpConnectionString');
+    config = require('../config.js');
 
 
+console.log('Starting Rabbit Publisher');
+console.log(`- Polling Interval: ${config.get('pollingIntervalMS')} milliseconds / ${config.get('pollingIntervalMS') / 1000} seconds`);
+console.log(`- Query Data Sources: ${JSON.stringify(config.get('dataSources'))}`);
+console.log(`- Query Content Types: ${JSON.stringify(config.get('contentTypes'))}`);
+console.log(`- Query Limit: ${config.get('queryLimit')}`);
 
-amqp.connect(connectionString, (error, connection) => {
+
+amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
     if (error) {
         throw error;
     }
@@ -45,15 +50,16 @@ amqp.connect(connectionString, (error, connection) => {
             cr.getRecentPublishes(limit, contentTypes, dataSources).then((response) => {
                 response.docs.forEach((doc) => {
                     const amqpMessage = {
-                            contentType: doc.type,                       // was objectType
-                            schemaVersion: '2.0.0',                      // was Version
-                            sourceId: doc.sourceId,                      // was sourceID
+                            contentType: doc.type,
+                            schemaVersion: '2.0.0',
+                            sourceId: doc.sourceId,
                             url: doc.url
                         },
                         mongoRecord = {
                             contentType: doc.type,                       // was objectType
                             firstPublishDate: doc.firstPublishDate,
                             lastModifiedDate: doc.lastModifiedDate,
+                            schemaVersion: '2.0.0',                      // was Version
                             sourceId: doc.sourceId,                      // was sourceID
                             url: doc.url
                             // activityIndex: 0,                         // ???
@@ -66,26 +72,28 @@ amqp.connect(connectionString, (error, connection) => {
                             // slug: doc.slug,
                         };
 
-                    request({
-                        method: 'POST',
-                        json: mongoRecord,
-                        url: `http://localhost:${config.get('PORT')}/api/v1/publishes/add-record`,
-                        timeout: 1000 * 5
-                    }, (error, response, body) => {
+                    db.publishes.findAndModify({
+                        query: {sourceId: doc.sourceId},
+                        update: {$set: mongoRecord},
+                        upsert: true
+                    }, (error, document, lastErrorObject) => {
+                        if (error) {
+                            debug(`Error: ${error}`);
+                            throw error;
+                        }
+
                         const key = `${doc.dataSource.replace(/\./g, '-')}.${doc.type}`;
 
-                        // IF body.value IS NULL OR
-                        //     body.value IS NOT NULL AND body.value.lastModifiedDate DOES NOT EQUAL doc.lastModifiedDate
-                        if (!body.value || (body.value && (body.value.lastModifiedDate !== doc.lastModifiedDate))) {
+                        if (!document || (document && (document.lastModifiedDate !== doc.lastModifiedDate))) {
                             channel.assertExchange(exchangeName, 'topic', {durable: true});
                             channel.publish(exchangeName, key, new Buffer(JSON.stringify(amqpMessage)));
-                            console.log(`PUBLISHED: ${key}: ${JSON.stringify(amqpMessage)}`);
+                            console.log(`${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${key}: ${JSON.stringify(amqpMessage)}`);
                         } else {
-                            debug(`NOT published ${doc.url} - ${(body.value) ? body.value.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}`);
+                            debug(`NOT published ${doc.url} - ${(document) ? document.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}`);
                         }
                     });
                 });
             });
-        }, 1000 * 10);
+        }, config.get('pollingIntervalMS'));
     });
 });
