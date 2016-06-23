@@ -60,7 +60,7 @@ $ open docs/index.html
 
 - `PORT` - **REQUIRED** - The port the service runs on.
 
-- `DEBUG=mss-town-crier:*` - Set to enable visible
+- `DEBUG=cnn-town-crier:*` - Set to enable visible
   [debug](https://www.npmjs.com/package/debug) logging to console.
 
 - `QUERY_CONTENT_TYPES` - The content types to query for.  Defaults to
@@ -97,11 +97,11 @@ See [LICENSE.md](./LICENSE.md) for details.
 
 
 
-[![build](https://img.shields.io/travis/cnnlabs/mss-town-crier/master.svg?style=flat-square)](https://travis-ci.org/cnnlabs/mss-town-crier)
-![node](https://img.shields.io/node/v/mss-town-crier.svg?style=flat-square)
-[![npm](https://img.shields.io/npm/v/mss-town-crier.svg?style=flat-square)](https://www.npmjs.com/package/mss-town-crier)
-[![npm-downloads](https://img.shields.io/npm/dm/mss-town-crier.svg?style=flat-square)](https://www.npmjs.com/package/mss-town-crier)
-[![dependency-status](https://gemnasium.com/cnnlabs/mss-town-crier.svg)](https://gemnasium.com/cnnlabs/mss-town-crier)
+[![build](https://img.shields.io/travis/cnnlabs/cnn-town-crier/master.svg?style=flat-square)](https://travis-ci.org/cnnlabs/cnn-town-crier)
+![node](https://img.shields.io/node/v/cnn-town-crier.svg?style=flat-square)
+[![npm](https://img.shields.io/npm/v/cnn-town-crier.svg?style=flat-square)](https://www.npmjs.com/package/cnn-town-crier)
+[![npm-downloads](https://img.shields.io/npm/dm/cnn-town-crier.svg?style=flat-square)](https://www.npmjs.com/package/cnn-town-crier)
+[![dependency-status](https://gemnasium.com/cnnlabs/cnn-town-crier.svg)](https://gemnasium.com/cnnlabs/cnn-town-crier)
 
 
 
