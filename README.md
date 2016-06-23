@@ -3,6 +3,10 @@
 A service for listening to CNN content publishes from a variety of sources that
 populates an AMQP exchange.
 
+[![dependency-status](https://gemnasium.com/cnnlabs/cnn-town-crier.svg)](https://gemnasium.com/cnnlabs/cnn-town-crier)
+[![build-status](https://img.shields.io/travis/cnnlabs/cnn-town-crier/master.svg?style=flat-square&label=master)](https://travis-ci.org/cnnlabs/cnn-town-crier)
+[![build-status](https://img.shields.io/travis/cnnlabs/cnn-town-crier/master.svg?style=flat-square&label=develop)](https://travis-ci.org/cnnlabs/cnn-town-crier)
+
 
 
 ## Requirements
@@ -96,13 +100,5 @@ $ open docs/index.html
 See [LICENSE.md](./LICENSE.md) for details.
 
 
-
-[![build](https://img.shields.io/travis/cnnlabs/cnn-town-crier/master.svg?style=flat-square)](https://travis-ci.org/cnnlabs/cnn-town-crier)
-![node](https://img.shields.io/node/v/cnn-town-crier.svg?style=flat-square)
-[![npm](https://img.shields.io/npm/v/cnn-town-crier.svg?style=flat-square)](https://www.npmjs.com/package/cnn-town-crier)
-[![npm-downloads](https://img.shields.io/npm/dm/cnn-town-crier.svg?style=flat-square)](https://www.npmjs.com/package/cnn-town-crier)
-[![dependency-status](https://gemnasium.com/cnnlabs/cnn-town-crier.svg)](https://gemnasium.com/cnnlabs/cnn-town-crier)
-
-
-
+---
 ♥︎ Like a lemon to a lime a lime to a lemon ♥︎
