@@ -1,5 +1,5 @@
 {
-    "title": "MSS Town Crier",
+    "title": "CNN Town Crier",
     "source": "./",
     "destination": "./docs",
     "excludes": ["coverage", "docs", "node_modules"],

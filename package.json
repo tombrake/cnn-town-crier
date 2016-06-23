@@ -1,7 +1,7 @@
 {
-  "name": "mss-towncrier",
+  "name": "cnn-town-crier",
   "version": "2.0.0",
-  "description": "MSS Town Crier",
+  "description": "CNN Town Crier",
   "main": "server.js",
   "directories": {
     "docs": "./docs",
@@ -20,9 +20,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cnnlabs/mss-towncrier.git"
+    "url": "git+https://github.com/cnnlabs/cnn-town-crier.git"
   },
-  "homepage": "https://github.com/cnnlabs/mss-towncrier#readme",
+  "homepage": "https://github.com/cnnlabs/cnn-town-crier#readme",
   "engines": {
     "node": "6.2.2"
   },
@@ -54,6 +54,6 @@
   ],
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/cnnlabs/mss-towncrier/issues"
+    "url": "https://github.com/cnnlabs/cnn-town-crier/issues"
   }
 }

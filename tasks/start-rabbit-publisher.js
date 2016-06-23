@@ -17,7 +17,7 @@
 'use strict';
 
 const amqp = require('amqplib/callback_api'),
-    debug = require('debug')('mss-towncrier:start-rabbit-publisher'),
+    debug = require('debug')('cnn-town-crier:start-rabbit-publisher'),
     db = require('../lib/mongodb.js'),
     ContentRetriever = require('cnn-content-retriever'),
     cr = new ContentRetriever(),

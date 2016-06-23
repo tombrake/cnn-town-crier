@@ -1,4 +1,4 @@
-# MSS Town Crier
+# CNN Town Crier
 
 A service for listening to CNN content publishes from a variety of sources that
 populates an AMQP exchange.
