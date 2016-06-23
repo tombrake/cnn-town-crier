@@ -63,14 +63,13 @@ $ open docs/index.html
 - `DEBUG=mss-town-crier:*` - Set to enable visible
   [debug](https://www.npmjs.com/package/debug) logging to console.
 
-- `CONTENT_TYPES` - The content types to query for.  Defaults to
+- `QUERY_CONTENT_TYPES` - The content types to query for.  Defaults to
   `["article", "blogpost", "gallery", "image", "video"]`.  If set, the value
   will be `JSON.parse()`ed, make sure it is valid JSON.
 
-- `DATA_SOURCES` - The data sources to query for.  Defaults to
+- `QUERY_DATA_SOURCES` - The data sources to query for.  Defaults to
   `["api.greatbigstory.com", "cnn", "cnnespanol.cnn.com", "money"]`. If set, the
   value will be `JSON.parse()`ed, make sure it is valid JSON.
-
 
 - `QUERY_LIMIT` - The number of items of content to query for over 10 seconds.
   Defaults to 10
@@ -98,12 +97,12 @@ See [LICENSE.md](./LICENSE.md) for details.
 
 
 
-♥︎ Like a lemon to a lime a lime to a lemon ♥︎
-
-
-
 [![build](https://img.shields.io/travis/cnnlabs/mss-town-crier/master.svg?style=flat-square)](https://travis-ci.org/cnnlabs/mss-town-crier)
 ![node](https://img.shields.io/node/v/mss-town-crier.svg?style=flat-square)
 [![npm](https://img.shields.io/npm/v/mss-town-crier.svg?style=flat-square)](https://www.npmjs.com/package/mss-town-crier)
 [![npm-downloads](https://img.shields.io/npm/dm/mss-town-crier.svg?style=flat-square)](https://www.npmjs.com/package/mss-town-crier)
 [![dependency-status](https://gemnasium.com/cnnlabs/mss-town-crier.svg)](https://gemnasium.com/cnnlabs/mss-town-crier)
+
+
+
+♥︎ Like a lemon to a lime a lime to a lemon ♥︎

@@ -26,8 +26,8 @@ const amqp = require('amqplib/callback_api'),
 
 console.log('Starting Rabbit Publisher');
 console.log(`- Polling Interval: ${config.get('pollingIntervalMS')} milliseconds / ${config.get('pollingIntervalMS') / 1000} seconds`);
-console.log(`- Query Data Sources: ${JSON.stringify(config.get('dataSources'))}`);
-console.log(`- Query Content Types: ${JSON.stringify(config.get('contentTypes'))}`);
+console.log(`- Query Data Sources: ${JSON.stringify(config.get('queryDataSources'))}`);
+console.log(`- Query Content Types: ${JSON.stringify(config.get('queryContentTypes'))}`);
 console.log(`- Query Limit: ${config.get('queryLimit')}`);
 
 
@@ -41,13 +41,8 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
             throw error;
         }
 
-        const contentTypes = config.get('contentTypes'),
-            dataSources = config.get('dataSources'),
-            exchangeName = 'town_crier_v2',
-            limit = config.get('queryLimit');
-
         setInterval(() => {
-            cr.getRecentPublishes(limit, contentTypes, dataSources).then((response) => {
+            cr.getRecentPublishes(config.get('queryLimit'), config.get('queryContentTypes'), config.get('queryDataSources')).then((response) => {
                 response.docs.forEach((doc) => {
                     const amqpMessage = {
                             contentType: doc.type,
@@ -85,8 +80,8 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                         const key = `${doc.dataSource.replace(/\./g, '-')}.${doc.type}`;
 
                         if (!document || (document && (document.lastModifiedDate !== doc.lastModifiedDate))) {
-                            channel.assertExchange(exchangeName, 'topic', {durable: true});
-                            channel.publish(exchangeName, key, new Buffer(JSON.stringify(amqpMessage)));
+                            channel.assertExchange(config.get('cloudamqpExchangeName'), 'topic', {durable: true});
+                            channel.publish(config.get('cloudamqpExchangeName'), key, new Buffer(JSON.stringify(amqpMessage)));
                             console.log(`${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${key}: ${JSON.stringify(amqpMessage)}`);
                         } else {
                             debug(`NOT published ${doc.url} - ${(document) ? document.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}`);

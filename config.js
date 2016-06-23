@@ -17,23 +17,21 @@
 'use strict';
 
 
-const nconf = require('nconf'),
-    pkg = require('./package.json');
-
-let config;
+const nconf = require('nconf');
 
 
 
 // whitelist environment variables
 nconf.env([
     'CLOUDAMQP_AUTH',
-    'CONTENT_TYPES',
-    'DATA_SOURCES',
     'ENVIRONMENT',
     'MONGODB_AUTH',
     'PORT',
+    'QUERY_CONTENT_TYPES',
+    'QUERY_DATA_SOURCES',
     'QUERY_LIMIT'
 ]);
+
 
 
 // These are required to be set to start up
@@ -44,13 +42,14 @@ if (!nconf.get('ENVIRONMENT') || !nconf.get('PORT') || !nconf.get('CLOUDAMQP_AUT
 
 
 
-config = {
+let config = {
     default: {
         cloudamqpConnectionString: `amqp://${nconf.get('CLOUDAMQP_AUTH')}@red-rhino.rmq.cloudamqp.com/cnn-towncrier`,
-        contentTypes: (nconf.get('CONTENT_TYPES')) ? JSON.parse(nconf.get('CONTENT_TYPES')) : ['article', 'blogpost', 'gallery', 'image', 'video'],
-        dataSources: (nconf.get('DATA_SOURCES')) ? JSON.parse(nconf.get('DATA_SOURCES')) : ['api.greatbigstory.com', 'cnn', 'cnnespanol.cnn.com', 'money'],
+        cloudamqpExchangeName: 'town_crier_v2',
         mongoConnectionString: `${nconf.get('MONGODB_AUTH')}@ds025782.mlab.com:25782/mss-towncrier-v2-dev`,
         pollingIntervalMS: (nconf.get('POLLING_INTERVAL_MS')) ? parseInt(nconf.get('POLLING_INTERVAL_MS')) : 1000 * 10,
+        queryContentTypes: (nconf.get('QUERY_CONTENT_TYPES')) ? JSON.parse(nconf.get('QUERY_CONTENT_TYPES')) : ['article', 'blogpost', 'gallery', 'image', 'video'],
+        queryDataSources: (nconf.get('QUERY_DATA_SOURCES')) ? JSON.parse(nconf.get('QUERY_DATA_SOURCES')) : ['api.greatbigstory.com', 'cnn', 'cnnespanol.cnn.com', 'money'],
         queryLimit: (nconf.get('QUERY_LIMIT')) ? parseInt(JSON.parse(nconf.get('QUERY_LIMIT'))) : 10
     },
     prod: {}
