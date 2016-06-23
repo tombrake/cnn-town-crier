@@ -82,9 +82,9 @@ $ open docs/index.html
   If [nvm](https://github.com/creationix/nvm) is used typing `nvm install`
   in the terminal will insure the correct version is used.
 
-- Contributors should read [CONTRIBUTING.md](./CONTRIBUTING.md).
+- Contributors should be familiar with the [Contributors Guide](https://github.com/cnnlabs/organization-docs/blob/master/CONTRIBUTING.md)
 
-- Collaborators should read [COLLABORATOR_GUIDE.md](./COLLABORATOR_GUIDE.md).
+- Collaborators should be familiar with the [Collaborator Guide](https://github.com/cnnlabs/organization-docs/blob/master/COLLABORATOR_GUIDE.md)
 
 - The current Project Owner (PO) of this project is Jamie Young
 ([@jamsyoung](https://github.com/jamsyoung/)).
