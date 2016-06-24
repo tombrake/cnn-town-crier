@@ -7,7 +7,5 @@ ADD . /cnn-town-crier/
 
 EXPOSE ${PORT}
 
-cd /cnn-town-crier
-npm install
-
+CMD cd /cnn-town-crier && npm install
 CMD cd /cnn-town-crier && node server.js
