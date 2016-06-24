@@ -77,11 +77,15 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                             throw error;
                         }
 
-                        const key = `${doc.dataSource.replace(/\./g, '-')}.${doc.type}`;
+                        // The key format should be [datasource].[contenttype]
+                        // A datasource with a . in it needs to have all the
+                        // dots in it converted to dashes.
+                        const key = `${doc.dataSource.replace(/\./g, '-')}.${doc.type}`,
+                            exchangeName = `${config.get('cloudamqpExchangeName')}-${config.get('ENVIRONMENT')}`;
 
                         if (!document || (document && (document.lastModifiedDate !== doc.lastModifiedDate))) {
-                            channel.assertExchange(config.get('cloudamqpExchangeName'), 'topic', {durable: true});
-                            channel.publish(config.get('cloudamqpExchangeName'), key, new Buffer(JSON.stringify(amqpMessage)));
+                            channel.assertExchange(exchangeName, 'topic', {durable: true});
+                            channel.publish(exchangeName, key, new Buffer(JSON.stringify(amqpMessage)));
                             console.log(`${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${key}: ${JSON.stringify(amqpMessage)}`);
                         } else {
                             debug(`NOT published ${doc.url} - ${(document) ? document.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}`);
