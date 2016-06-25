@@ -26,6 +26,20 @@ $ CLOUDAMQP_AUTH=user:pass MONGODB_AUTH=user:pass npm start
 
 
 
+## How to write a consumer
+
+Town Crier is a PUBLISHER.  For an app to process the items that have been
+published a CONSUMER will need to be implemented.
+
+See the [example/ksa-consumer.js](./example/ksa-consumer.js) for an example on
+how to create a consumer that only cares about specific Routing Keys.
+
+There should be no need to configure anything in the CloudAMQP UI.  All
+Exchanges, Queues, and Routing Keys should be created dynamically by Town Crier
+and the consuming app.
+
+
+
 ## ESDoc Documentation
 
 You can generate and view the docs locally with the commands below.  The `open`
