@@ -51,7 +51,7 @@
  * The Queue Name, Queue options, and Routing Keys are up to the CONSUMER to
  * set.  The Queue options are typically `{noAck: true}` or `{noAck: false}`.
  *
- * There are also a specific set of Routing Keys that can be consumed.  The
+ * There is also a specific set of Routing Keys that can be consumed.  The
  * Routing Keys are set by Town Crier configuration.  The defaults can be found
  * here:
  *
