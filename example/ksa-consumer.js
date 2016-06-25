@@ -59,8 +59,8 @@
  *
  * The Routing Key is the combintion of the data sources and the content types
  * in the format of `datasource.contenttype`.  Any dots (.) in the data source
- * is converted to a dash (-).  The current set of Routing Keys set by default
- * are:
+ * are converted to a dash (-).  The current set of Routing Keys set by default
+ * is:
  *
  *     - api-greatbigstory-com.article
  *     - api-greatbigstory-com.blogpost
