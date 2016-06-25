@@ -105,7 +105,7 @@
  *     $ CLOUDAMQP_AUTH=user:pass MONGODB_AUTH=user:pass ENVIRONMENT=foo PORT=5000 node server.js
  *     $ CLOUDAMQP_AUTH=user:pass ENVIRONMENT=foo PORT=5000 node example/ksa-consumer.js
  *
- * You can see all of the Exchanges and Queues that have been created on in the
+ * You can see all of the Exchanges and Queues that have been created in the
  * CloudAMPQ UI.
  */
 
