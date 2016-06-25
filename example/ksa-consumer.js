@@ -85,8 +85,7 @@
  *
  * IMPORTANT: Many of these combinations may never have qualifying content.  For
  * example, all Great Big Story content is video, so there will probably never
- * be a api-greatbigstory-com.article, blogpost, gallery, or image.  The example
- * below shows how this CONSUMER only cares about specific Routing Keys.
+ * be an api-greatbigstory-com.article, blogpost, gallery, or image.
  *
  * Start this example with:
  *
@@ -94,12 +93,14 @@
  *
  * It is very possible the `cnn-town-crier-ref` Queue that this will create /
  * connect to will be empty.  This will connect to the REF Town Crier
- * environment, which should alwyas be running.  You may need to wait for
+ * environment, which should always be running.  You may need to wait for
  * someone to publish some content to see it do anything.
  *
  * Alternatively you can run Town Crier locally by starting it up with a custom
  * environment and then run this example with the same custom environment.  This
- * will create a new Exchange and Queue for the custom environment.
+ * will create a new Exchange and Queue for the custom environment.  You will
+ * still need to wait around for a publish to happen, but at least you will know
+ * that another consumer is not going to steal your queue items.
  *
  *     $ CLOUDAMQP_AUTH=user:pass MONGODB_AUTH=user:pass ENVIRONMENT=foo PORT=5000 node server.js
  *     $ CLOUDAMQP_AUTH=user:pass ENVIRONMENT=foo PORT=5000 node example/ksa-consumer.js
