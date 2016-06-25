@@ -131,6 +131,9 @@ amqp.connect(connectionString, (error, connection) => {
                 channel.bindQueue(queueName.queue, exchangeName, routingKey);
             });
 
+            // Apple News can only process one queue item at a time
+            channel.prefetch(1);
+
             channel.consume(queueName.queue, (message) => {
                 console.log(`${message.fields.routingKey}: ${message.content.toString()}`);
 
@@ -139,7 +142,10 @@ amqp.connect(connectionString, (error, connection) => {
                     channel.ack(message);
                 }, 1000 * 10); // 10 seconds
 
-            }, {noAck: false});
+            }, {
+                noAck: false,   // require acknowledgments
+                exclusive: true // only allow one consumer connection to the queue
+            });
         });
     });
 });
