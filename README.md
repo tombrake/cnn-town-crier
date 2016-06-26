@@ -4,8 +4,8 @@ A service for listening to CNN content publishes from a variety of sources that
 populates an AMQP exchange.
 
 [![dependency-status](https://gemnasium.com/cnnlabs/cnn-town-crier.svg)](https://gemnasium.com/cnnlabs/cnn-town-crier)
-[![build-status](https://img.shields.io/travis/cnnlabs/cnn-town-crier/master.svg?style=flat-square&label=master)](https://travis-ci.org/cnnlabs/cnn-town-crier)
-[![build-status](https://img.shields.io/travis/cnnlabs/cnn-town-crier/master.svg?style=flat-square&label=develop)](https://travis-ci.org/cnnlabs/cnn-town-crier)
+[![build-status-master](https://img.shields.io/travis/cnnlabs/cnn-town-crier/master.svg?style=flat-square&label=master)](https://travis-ci.org/cnnlabs/cnn-town-crier)
+[![build-status-develop](https://img.shields.io/travis/cnnlabs/cnn-town-crier/master.svg?style=flat-square&label=develop)](https://travis-ci.org/cnnlabs/cnn-town-crier)
 
 
 
@@ -115,4 +115,4 @@ See [LICENSE.md](./LICENSE.md) for details.
 
 
 ---
-♥︎ Like a lemon to a lime a lime to a lemon ♥︎
+♥︎ Like a lemon to a lime a lime to a lemon - MCA
