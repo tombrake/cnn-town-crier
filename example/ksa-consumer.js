@@ -85,25 +85,16 @@
  *
  * IMPORTANT: Many of these combinations may never have qualifying content.  For
  * example, all Great Big Story content is video, so there will probably never
- * be an api-greatbigstory-com.article, blogpost, gallery, or image.
+ * be an api-greatbigstory-com.article, blogpost, gallery, or image.  Only
+ * subscribe to the ones your app cares about.
  *
  * Start this example with:
  *
  *     $ CLOUDAMQP_AUTH=user:pass ENVIRONMENT=ref PORT=5000 node example/ksa-consumer.js
  *
- * It is very possible the `cnn-town-crier-ref` Queue that this will create /
- * connect to will be empty.  This will connect to the REF Town Crier
- * environment, which should always be running.  You may need to wait for
- * someone to publish some content to see it do anything.
- *
- * Alternatively you can run Town Crier locally by starting it up with a custom
- * environment and then run this example with the same custom environment.  This
- * will create a new Exchange and Queue for the custom environment.  You will
- * still need to wait around for a publish to happen, but at least you will know
- * that another consumer is not going to steal your queue items.
- *
- *     $ CLOUDAMQP_AUTH=user:pass MONGODB_AUTH=user:pass ENVIRONMENT=foo PORT=5000 node server.js
- *     $ CLOUDAMQP_AUTH=user:pass ENVIRONMENT=foo PORT=5000 node example/ksa-consumer.js
+ * It is very possible the `apple-news-ref` Queue that this example will connect
+ * to will be empty.  You may need to wait for someone to publish some content
+ * to see it do anything.
  *
  * You can see all of the Exchanges and Queues that have been created in the
  * CloudAMPQ UI.
