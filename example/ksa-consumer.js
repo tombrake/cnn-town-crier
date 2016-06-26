@@ -106,17 +106,18 @@ const amqp = require('amqplib/callback_api'),
 
 amqp.connect(connectionString, (error, connection) => {
     connection.createChannel((error, channel) => {
-        const exchangeName = `${config.get('cloudamqpExchangeName')}-${config.get('ENVIRONMENT')}`,
-            routingKeys = [
+        const exchangeName = `${config.get('cloudamqpExchangeName')}-${config.get('ENVIRONMENT')}`;
+
+        channel.assertExchange(exchangeName, 'topic', {durable: true});
+
+        channel.assertQueue(`apple-news-${config.get('ENVIRONMENT')}`, {durable: true}, (error, queueName) => {
+            const routingKeys = [
                 'cnn.article',
                 'cnn.video',
                 'cnn.gallery',
                 'money.article',
                 'api-greatbigstory-com.article'
             ];
-
-        channel.assertExchange(exchangeName, 'topic', {durable: true});
-        channel.assertQueue(`apple-news-${config.get('ENVIRONMENT')}`, {durable: true}, (error, queueName) => {
 
             routingKeys.forEach((routingKey) => {
                 channel.bindQueue(queueName.queue, exchangeName, routingKey);
