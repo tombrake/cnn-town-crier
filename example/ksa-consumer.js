@@ -106,11 +106,12 @@ const amqp = require('amqplib/callback_api'),
 
 amqp.connect(connectionString, (error, connection) => {
     connection.createChannel((error, channel) => {
-        const exchangeName = `${config.get('cloudamqpExchangeName')}-${config.get('ENVIRONMENT')}`;
+        const exchangeName = 'cnn-town-crier-ref'; // for production use 'cnn-town-crier-prod'
 
         channel.assertExchange(exchangeName, 'topic', {durable: true});
 
-        channel.assertQueue(`apple-news-${config.get('ENVIRONMENT')}`, {durable: true}, (error, queueName) => {
+        // the queue name can be whatever you want, however appname-environment is recommended
+        channel.assertQueue('apple-news-ref', {durable: true}, (error, queueName) => {
             const routingKeys = [
                 'cnn.article',
                 'cnn.video',
@@ -123,7 +124,7 @@ amqp.connect(connectionString, (error, connection) => {
                 channel.bindQueue(queueName.queue, exchangeName, routingKey);
             });
 
-            // Apple News can only process one queue item at a time
+            // apple news can only process one queue item at a time
             channel.prefetch(1);
 
             channel.consume(queueName.queue, (message) => {
