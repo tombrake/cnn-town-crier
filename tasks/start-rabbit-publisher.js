@@ -45,20 +45,22 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
             cr.getRecentPublishes(config.get('queryLimit'), config.get('queryContentTypes'), config.get('queryDataSources')).then((response) => {
                 response.docs.forEach((doc) => {
                     const amqpMessage = {
+                            branding: doc.attributes.branding,
                             contentType: doc.type,
-                            schemaVersion: '2.0.0',
+                            schemaVersion: '2.1.0',
+                            slug: doc.slug,
                             sourceId: doc.sourceId,
                             url: doc.url
                         },
                         mongoRecord = {
+                            branding: doc.attributes.branding,
                             contentType: doc.type,                       // was objectType
                             firstPublishDate: doc.firstPublishDate,
                             lastModifiedDate: doc.lastModifiedDate,
                             schemaVersion: '2.0.0',                      // was Version
+                            slug: doc.slug,
                             sourceId: doc.sourceId,                      // was sourceID
-                            url: doc.url,
-                            branding: doc.attributes.branding,
-                            slug: doc.slug
+                            url: doc.url
                             // activityIndex: 0,                         // ???
                             // CreatedDateTime: new Date(),              // date mongo record created - can pull this from _id
                             // isActive: true,                           // ???
