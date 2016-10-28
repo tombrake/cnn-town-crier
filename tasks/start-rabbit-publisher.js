@@ -56,7 +56,9 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                             lastModifiedDate: doc.lastModifiedDate,
                             schemaVersion: '2.0.0',                      // was Version
                             sourceId: doc.sourceId,                      // was sourceID
-                            url: doc.url
+                            url: doc.url,
+                            branding: doc.attributes.branding,
+                            slug: doc.slug
                             // activityIndex: 0,                         // ???
                             // CreatedDateTime: new Date(),              // date mongo record created - can pull this from _id
                             // isActive: true,                           // ???
@@ -64,7 +66,6 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                             // isRemoved: false,                         // ???
                             // lastStatus: 'updated'                     // first publish or update
                             // ModifiedDateTime: new Date(),             // date mongo record modified - can pull this from _id
-                            // slug: doc.slug,
                         };
 
                     db.publishes.findAndModify({
