@@ -45,7 +45,7 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
             cr.getRecentPublishes(config.get('queryLimit'), config.get('queryContentTypes'), config.get('queryDataSources')).then((response) => {
                 response.docs.forEach((doc) => {
                     const amqpMessage = {
-                            branding: doc.attributes.branding,
+                            branding: (doc.attributes) ? doc.attributes.branding : '',
                             contentType: doc.type,
                             schemaVersion: '2.1.0',
                             slug: doc.slug,
@@ -53,7 +53,7 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                             url: doc.url
                         },
                         mongoRecord = {
-                            branding: doc.attributes.branding,
+                            branding: (doc.attributes) ? doc.attributes.branding : '',
                             contentType: doc.type,                       // was objectType
                             firstPublishDate: doc.firstPublishDate,
                             lastModifiedDate: doc.lastModifiedDate,
