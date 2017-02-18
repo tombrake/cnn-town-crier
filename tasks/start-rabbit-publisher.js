@@ -59,7 +59,9 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                             schemaVersion: '2.1.0',
                             slug: doc.slug,
                             sourceId: doc.sourceId,
-                            url: doc.url
+                            url: doc.url,
+                            firstPublishDate: doc.firstPublishDate,
+                            lastModifiedDate: doc.lastModifiedDate
                         },
                         mongoRecord = {
                             branding: (doc.attributes) ? doc.attributes.branding : '',
@@ -98,7 +100,7 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                         if (!document || (document && (document.lastModifiedDate !== doc.lastModifiedDate))) {
                             channel.assertExchange(exchangeName, 'topic', {durable: true});
                             channel.publish(exchangeName, key, new Buffer(JSON.stringify(amqpMessage)));
-                            console.log(`${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${key}: ${JSON.stringify(amqpMessage)}`);
+                            console.log(`${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${exchangeName} : ${key}: ${JSON.stringify(amqpMessage)}`);
                         } else {
                             debug(`NOT published ${doc.url} - ${(document) ? document.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}`);
                         }
