@@ -25,6 +25,8 @@ const amqp = require('amqplib/callback_api'),
 
 
 console.log('Starting Rabbit Publisher');
+console.log(`- ENVIRONMENT: ${config.get('ENVIRONMENT')}`);
+console.log(`- Datastore: ${config.get('mongoDatabase')}`);
 console.log(`- Polling Interval: ${config.get('pollingIntervalMS')} milliseconds / ${config.get('pollingIntervalMS') / 1000} seconds`);
 console.log(`- Query Data Sources: ${JSON.stringify(config.get('queryDataSources'))}`);
 console.log(`- Query Content Types: ${JSON.stringify(config.get('queryContentTypes'))}`);
