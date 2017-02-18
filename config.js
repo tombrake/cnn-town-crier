@@ -50,7 +50,7 @@ let config = {
         pollingIntervalMS: (nconf.get('POLLING_INTERVAL_MS')) ? parseInt(nconf.get('POLLING_INTERVAL_MS')) : 1000 * 10,
         queryContentTypes: (nconf.get('QUERY_CONTENT_TYPES')) ? JSON.parse(nconf.get('QUERY_CONTENT_TYPES')) : ['article', 'blogpost', 'gallery', 'image', 'video'],
         queryDataSources: (nconf.get('QUERY_DATA_SOURCES')) ? JSON.parse(nconf.get('QUERY_DATA_SOURCES')) : ['api.greatbigstory.com', 'cnn', 'cnnespanol.cnn.com', 'money'],
-        queryLimit: (nconf.get('QUERY_LIMIT')) ? parseInt(JSON.parse(nconf.get('QUERY_LIMIT'))) : 10
+        queryLimit: (nconf.get('QUERY_LIMIT')) ? parseInt(JSON.parse(nconf.get('QUERY_LIMIT'))) : 100
     },
     prod: {
         mongoConnectionString: `${nconf.get('MONGODB_AUTH')}@ds023464-a0.mlab.com:23464,ds023464-a1.mlab.com:23464/cnn-town-crier?replicaSet=rs-ds023464`

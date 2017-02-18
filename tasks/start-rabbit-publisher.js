@@ -42,6 +42,13 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
         }
 
         setInterval(() => {
+            // Defaults:
+            // queryLimit: 100
+            // queryContentTypes: ['article', 'blogpost', 'gallery', 'image', 'video']
+            // queryDataSources: ['api.greatbigstory.com', 'cnn', 'cnnespanol.cnn.com', 'money']
+            // query URL: http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:10/sort:lastPublishDate
+            // curl: curl -sS 'http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:100/sort:lastPublishDate' | jq .
+            // curl -sS 'http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:100/sort:lastPublishDate' | jq '.docs[] | {dataSource, type, url}'
             cr.getRecentPublishes(config.get('queryLimit'), config.get('queryContentTypes'), config.get('queryDataSources')).then((response) => {
                 response.docs.forEach((doc) => {
                     const amqpMessage = {
