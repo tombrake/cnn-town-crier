@@ -71,6 +71,10 @@ switch (nconf.get('ENVIRONMENT').toLowerCase()) {
         nconf.defaults(config.prod);
         break;
 
+    case 'ref':
+        nconf.defaults(config.ref);
+        break;
+
     default:
         nconf.defaults(config.default);
 }
