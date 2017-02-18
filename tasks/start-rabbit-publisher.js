@@ -85,7 +85,7 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                         query: {sourceId: doc.sourceId},
                         update: {$set: mongoRecord},
                         upsert: true
-                    }, (error, document, lastErrorObject) => {
+                    }, (error, dbRecord, lastErrorObject) => {
                         if (error) {
                             debug(`Error: ${error}`);
                             throw error;
@@ -97,12 +97,12 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                         const key = `${doc.dataSource.replace(/\./g, '-')}.${doc.type}`,
                             exchangeName = `${config.get('cloudamqpExchangeName')}-${config.get('ENVIRONMENT')}`;
 
-                        if (!document || (document && (document.lastModifiedDate !== doc.lastModifiedDate))) {
+                        if (!dbRecord || (dbRecord && (dbRecord.lastModifiedDate !== doc.lastModifiedDate))) {
                             channel.assertExchange(exchangeName, 'topic', {durable: true});
                             channel.publish(exchangeName, key, new Buffer(JSON.stringify(amqpMessage)));
-                            console.log(`${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${exchangeName} : ${key}: ${JSON.stringify(amqpMessage)}`);
+                            console.log(`${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${exchangeName} : ${key}: ${JSON.stringify(amqpMessage)} - dbRecord.lastModifiedDate: ${dbRecord.lastModifiedDate}`);
                         } else {
-                            debug(`NOT published ${doc.url} - ${(document) ? document.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}`);
+                            debug(`NOT published ${doc.url} - ${(dbRecord) ? dbRecord.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}`);
                         }
                     });
                 });
