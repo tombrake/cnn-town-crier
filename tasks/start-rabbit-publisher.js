@@ -100,7 +100,7 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                         if (!dbRecord || (dbRecord && (dbRecord.lastModifiedDate !== doc.lastModifiedDate))) {
                             channel.assertExchange(exchangeName, 'topic', {durable: true});
                             channel.publish(exchangeName, key, new Buffer(JSON.stringify(amqpMessage)));
-                            console.log(`${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${exchangeName} : ${key}: ${JSON.stringify(amqpMessage)} - dbRecord.lastModifiedDate: ${dbRecord.lastModifiedDate}`);
+                            console.log(`${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${exchangeName} : ${key}: ${JSON.stringify(amqpMessage)} - dbRecord.lastModifiedDate: ${dbRecord.lastModifiedDate || null}`);
                         } else {
                             debug(`NOT published ${doc.url} - ${(dbRecord) ? dbRecord.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}`);
                         }
