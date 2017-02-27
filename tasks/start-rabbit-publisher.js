@@ -84,7 +84,7 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                     db.publishes.findAndModify({
                         query: {sourceId: doc.sourceId},
                         update: {$set: mongoRecord},
-                        new: true,
+                        new: false,
                         upsert: true
                     }, (error, dbRecord, lastErrorObject) => {
                         if (error) {
@@ -98,8 +98,6 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                         console.log('dbRecord', dbRecord);
                         console.log('error', error);
                         console.log('lastErrorObject', lastErrorObject);
-                        console.log('dbRecord.lastModifiedDate', dbRecord.lastModifiedDate);
-                        console.log('doc.lastModifiedDate', doc.lastModifiedDate);
 
                         // The key format should be [datasource].[contenttype]
                         // A datasource with a . in it needs to have all the
@@ -107,9 +105,7 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                         const key = `${doc.dataSource.replace(/\./g, '-')}.${doc.type}`,
                             exchangeName = `${config.get('cloudamqpExchangeName')}-${config.get('ENVIRONMENT')}`;
 
-                        // if (!dbRecord || (dbRecord && (dbRecord.lastModifiedDate !== doc.lastModifiedDate))) {
-                        // if (dbRecord && (dbRecord.lastModifiedDate !== doc.lastModifiedDate)) {
-                        if (dbRecord) { // && (dbRecord.lastModifiedDate !== doc.lastModifiedDate)) {
+                        if (!dbRecord || (dbRecord && (dbRecord.lastModifiedDate !== doc.lastModifiedDate))) {
                             channel.assertExchange(exchangeName, 'topic', {durable: true});
                             channel.publish(exchangeName, key, new Buffer(JSON.stringify(amqpMessage)));
                             console.log(`${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${exchangeName} : ${key}: ${JSON.stringify(amqpMessage)} - dbRecord: ${dbRecord}`);
