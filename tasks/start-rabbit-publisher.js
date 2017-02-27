@@ -30,7 +30,7 @@ console.log(`- Datastore: ${config.get('mongoDatabase')}`);
 console.log(`- Polling Interval: ${config.get('pollingIntervalMS')} milliseconds / ${config.get('pollingIntervalMS') / 1000} seconds`);
 console.log(`- Query Data Sources: ${JSON.stringify(config.get('queryDataSources'))}`);
 console.log(`- Query Content Types: ${JSON.stringify(config.get('queryContentTypes'))}`);
-console.log(`- Query Limit: ${config.get('queryLimit')}`);
+console.log(`- Query Limit: 10 || ${config.get('queryLimit')}`);
 
 
 amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
@@ -51,7 +51,8 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
             // query URL: http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:10/sort:lastPublishDate
             // curl: curl -sS 'http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:100/sort:lastPublishDate' | jq .
             // curl -sS 'http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:100/sort:lastPublishDate' | jq '.docs[] | {dataSource, type, url}'
-            cr.getRecentPublishes(config.get('queryLimit'), config.get('queryContentTypes'), config.get('queryDataSources')).then((response) => {
+            cr.getRecentPublishes(10, config.get('queryContentTypes'), config.get('queryDataSources')).then((response) => {
+            // cr.getRecentPublishes(config.get('queryLimit'), config.get('queryContentTypes'), config.get('queryDataSources')).then((response) => {
                 response.docs.forEach((doc) => {
                     const amqpMessage = {
                             branding: (doc.attributes) ? doc.attributes.branding : '',
@@ -84,12 +85,21 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                     db.publishes.findAndModify({
                         query: {sourceId: doc.sourceId},
                         update: {$set: mongoRecord},
+                        new: true,
                         upsert: true
                     }, (error, dbRecord, lastErrorObject) => {
                         if (error) {
                             debug(`Error: ${error}`);
                             throw error;
                         }
+
+                        console.log('🎥---✦------✦----🍏----✦-----✦---');
+                        console.log(amqpMessage);
+                        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+                        console.log(dbRecord);
+                        console.log(error);
+                        console.log(lastErrorObject);
+                        // console.log('🎬---✦------✦----🍏----✦-----✦---');
 
                         // The key format should be [datasource].[contenttype]
                         // A datasource with a . in it needs to have all the
