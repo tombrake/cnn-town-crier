@@ -30,7 +30,7 @@ console.log(`- Datastore: ${config.get('mongoDatabase')}`);
 console.log(`- Polling Interval: ${config.get('pollingIntervalMS')} milliseconds / ${config.get('pollingIntervalMS') / 1000} seconds`);
 console.log(`- Query Data Sources: ${JSON.stringify(config.get('queryDataSources'))}`);
 console.log(`- Query Content Types: ${JSON.stringify(config.get('queryContentTypes'))}`);
-console.log(`- Query Limit: 10 || ${config.get('queryLimit')}`);
+console.log(`- Query Limit: ${config.get('queryLimit')}`);
 
 
 amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
@@ -51,8 +51,7 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
             // query URL: http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:10/sort:lastPublishDate
             // curl: curl -sS 'http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:100/sort:lastPublishDate' | jq .
             // curl -sS 'http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:100/sort:lastPublishDate' | jq '.docs[] | {dataSource, type, url}'
-            cr.getRecentPublishes(10, config.get('queryContentTypes'), config.get('queryDataSources')).then((response) => {
-            // cr.getRecentPublishes(config.get('queryLimit'), config.get('queryContentTypes'), config.get('queryDataSources')).then((response) => {
+            cr.getRecentPublishes(config.get('queryLimit'), config.get('queryContentTypes'), config.get('queryDataSources')).then((response) => {
                 response.docs.forEach((doc) => {
                     const amqpMessage = {
                             branding: (doc.attributes) ? doc.attributes.branding : '',
@@ -93,13 +92,12 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                             throw error;
                         }
 
-                        console.log('🎥---✦------✦----🍏----✦-----✦---');
-                        console.log(amqpMessage);
+                        console.log('🎥--✦------✦----🍏----✦-----✦---');
+                        console.log('amqpMessage', amqpMessage);
                         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-                        console.log(dbRecord);
-                        console.log(error);
-                        console.log(lastErrorObject);
-                        // console.log('🎬---✦------✦----🍏----✦-----✦---');
+                        console.log('dbRecord', dbRecord);
+                        console.log('error', error);
+                        console.log('lastErrorObject', lastErrorObject);
 
                         // The key format should be [datasource].[contenttype]
                         // A datasource with a . in it needs to have all the
@@ -107,12 +105,13 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                         const key = `${doc.dataSource.replace(/\./g, '-')}.${doc.type}`,
                             exchangeName = `${config.get('cloudamqpExchangeName')}-${config.get('ENVIRONMENT')}`;
 
-                        if (!dbRecord || (dbRecord && (dbRecord.lastModifiedDate !== doc.lastModifiedDate))) {
+                        // if (!dbRecord || (dbRecord && (dbRecord.lastModifiedDate !== doc.lastModifiedDate))) {
+                        if (dbRecord && (dbRecord.lastModifiedDate !== doc.lastModifiedDate)) {
                             channel.assertExchange(exchangeName, 'topic', {durable: true});
                             channel.publish(exchangeName, key, new Buffer(JSON.stringify(amqpMessage)));
                             console.log(`${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${exchangeName} : ${key}: ${JSON.stringify(amqpMessage)} - dbRecord: ${dbRecord}`);
                         } else {
-                            debug(`NOT published ${doc.url} - ${(dbRecord) ? dbRecord.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}`);
+                            debug(`NOT published ${doc.url} - ${(dbRecord) ? dbRecord : 'null'} vs. ${doc.lastModifiedDate}`);
                         }
                     });
                 });
