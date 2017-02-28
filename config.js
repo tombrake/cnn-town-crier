@@ -46,7 +46,7 @@ let config = {
     default: {
         cloudamqpConnectionString: `amqp://${nconf.get('CLOUDAMQP_AUTH')}@red-rhino.rmq.cloudamqp.com/cnn-towncrier`,
         cloudamqpExchangeName: 'cnn-town-crier',
-        mongoConnectionString: `${nconf.get('MONGODB_AUTH')}@ds023064.mlab.com:23064/cnn-town-crier-dev`,
+        mongoConnectionString: `${nconf.get('MONGODB_AUTH')}@ds011429.mlab.com:11429/cnn-town-crier-ref`,
         pollingIntervalMS: (nconf.get('POLLING_INTERVAL_MS')) ? parseInt(nconf.get('POLLING_INTERVAL_MS')) : 1000 * 10,
         queryContentTypes: (nconf.get('QUERY_CONTENT_TYPES')) ? JSON.parse(nconf.get('QUERY_CONTENT_TYPES')) : ['article', 'blogpost', 'gallery', 'image', 'video'],
         queryDataSources: (nconf.get('QUERY_DATA_SOURCES')) ? JSON.parse(nconf.get('QUERY_DATA_SOURCES')) : ['api.greatbigstory.com', 'cnn', 'cnnespanol.cnn.com', 'money'],
