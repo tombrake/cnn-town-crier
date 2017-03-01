@@ -18,6 +18,7 @@
 
 const amqp = require('amqplib/callback_api'),
     debug = require('debug')('cnn-town-crier:start-rabbit-publisher'),
+    moment = require('moment'),
     db = require('../lib/mongodb.js'),
     ContentRetriever = require('cnn-content-retriever'),
     cr = new ContentRetriever(),
@@ -25,6 +26,8 @@ const amqp = require('amqplib/callback_api'),
 
 
 console.log('Starting Rabbit Publisher');
+console.log(`- ENVIRONMENT: ${config.get('ENVIRONMENT')}`);
+console.log(`- Datastore: ${config.get('mongoDatabase')}`);
 console.log(`- Polling Interval: ${config.get('pollingIntervalMS')} milliseconds / ${config.get('pollingIntervalMS') / 1000} seconds`);
 console.log(`- Query Data Sources: ${JSON.stringify(config.get('queryDataSources'))}`);
 console.log(`- Query Content Types: ${JSON.stringify(config.get('queryContentTypes'))}`);
@@ -42,6 +45,13 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
         }
 
         setInterval(() => {
+            // Defaults:
+            // queryLimit: 100
+            // queryContentTypes: ['article', 'blogpost', 'gallery', 'image', 'video']
+            // queryDataSources: ['api.greatbigstory.com', 'cnn', 'cnnespanol.cnn.com', 'money']
+            // query URL: http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:10/sort:lastPublishDate
+            // curl: curl -sS 'http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:100/sort:lastPublishDate' | jq .
+            // curl -sS 'http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:100/sort:lastPublishDate' | jq '.docs[] | {dataSource, type, url}'
             cr.getRecentPublishes(config.get('queryLimit'), config.get('queryContentTypes'), config.get('queryDataSources')).then((response) => {
                 response.docs.forEach((doc) => {
                     const amqpMessage = {
@@ -50,7 +60,9 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                             schemaVersion: '2.1.0',
                             slug: doc.slug,
                             sourceId: doc.sourceId,
-                            url: doc.url
+                            url: doc.url,
+                            firstPublishDate: doc.firstPublishDate,
+                            lastModifiedDate: doc.lastModifiedDate
                         },
                         mongoRecord = {
                             branding: (doc.attributes) ? doc.attributes.branding : '',
@@ -61,24 +73,19 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                             slug: doc.slug,
                             sourceId: doc.sourceId,                      // was sourceID
                             url: doc.url
-                            // activityIndex: 0,                         // ???
-                            // CreatedDateTime: new Date(),              // date mongo record created - can pull this from _id
-                            // isActive: true,                           // ???
-                            // isLocked: false,                          // ???
-                            // isRemoved: false,                         // ???
-                            // lastStatus: 'updated'                     // first publish or update
-                            // ModifiedDateTime: new Date(),             // date mongo record modified - can pull this from _id
                         };
 
                     db.publishes.findAndModify({
                         query: {sourceId: doc.sourceId},
                         update: {$set: mongoRecord},
+                        new: false,
                         upsert: true
-                    }, (error, document, lastErrorObject) => {
+                    }, (error, dbRecord, lastErrorObject) => {
                         if (error) {
                             debug(`Error: ${error}`);
                             throw error;
                         }
+
 
                         // The key format should be [datasource].[contenttype]
                         // A datasource with a . in it needs to have all the
@@ -86,12 +93,13 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                         const key = `${doc.dataSource.replace(/\./g, '-')}.${doc.type}`,
                             exchangeName = `${config.get('cloudamqpExchangeName')}-${config.get('ENVIRONMENT')}`;
 
-                        if (!document || (document && (document.lastModifiedDate !== doc.lastModifiedDate))) {
+                        if (!dbRecord || (dbRecord && (moment(dbRecord.lastModifiedDate).isBefore(doc.lastModifiedDate)))) {
+                            console.log(`${(dbRecord) ? dbRecord.lastModifiedDate : null} isBefore ${doc.lastModifiedDate}`);
                             channel.assertExchange(exchangeName, 'topic', {durable: true});
                             channel.publish(exchangeName, key, new Buffer(JSON.stringify(amqpMessage)));
-                            console.log(`${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${key}: ${JSON.stringify(amqpMessage)}`);
+                            console.log(`\x1b[32m${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${exchangeName} : ${key}: ${JSON.stringify(amqpMessage)} - dbRecord: ${JSON.stringify(dbRecord)}\x1b[0m`);
                         } else {
-                            debug(`NOT published ${doc.url} - ${(document) ? document.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}`);
+                            console.log(`\x1b[31mNOT published ${doc.url} - ${(dbRecord) ? dbRecord.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}\x1b[0m`);
                         }
                     });
                 });
