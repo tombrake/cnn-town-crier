@@ -18,6 +18,7 @@
 
 const amqp = require('amqplib/callback_api'),
     debug = require('debug')('cnn-town-crier:start-rabbit-publisher'),
+    moment = require('moment'),
     db = require('../lib/mongodb.js'),
     ContentRetriever = require('cnn-content-retriever'),
     cr = new ContentRetriever(),
@@ -72,13 +73,6 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                             slug: doc.slug,
                             sourceId: doc.sourceId,                      // was sourceID
                             url: doc.url
-                            // activityIndex: 0,                         // ???
-                            // CreatedDateTime: new Date(),              // date mongo record created - can pull this from _id
-                            // isActive: true,                           // ???
-                            // isLocked: false,                          // ???
-                            // isRemoved: false,                         // ???
-                            // lastStatus: 'updated'                     // first publish or update
-                            // ModifiedDateTime: new Date(),             // date mongo record modified - can pull this from _id
                         };
 
                     db.publishes.findAndModify({
@@ -92,12 +86,6 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                             throw error;
                         }
 
-                        console.log('🎥--✦------✦----🍏----✦-----✦---');
-                        console.log('amqpMessage', amqpMessage);
-                        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-                        console.log('dbRecord', dbRecord);
-                        console.log('error', error);
-                        console.log('lastErrorObject', lastErrorObject);
 
                         // The key format should be [datasource].[contenttype]
                         // A datasource with a . in it needs to have all the
@@ -105,12 +93,13 @@ amqp.connect(config.get('cloudamqpConnectionString'), (error, connection) => {
                         const key = `${doc.dataSource.replace(/\./g, '-')}.${doc.type}`,
                             exchangeName = `${config.get('cloudamqpExchangeName')}-${config.get('ENVIRONMENT')}`;
 
-                        if (!dbRecord || (dbRecord && (dbRecord.lastModifiedDate !== doc.lastModifiedDate))) {
+                        if (!dbRecord || (dbRecord && (moment(dbRecord.lastModifiedDate).isBefore(doc.lastModifiedDate)))) {
+                            console.log(`${(dbRecord) ? dbRecord.lastModifiedDate : null} isBefore ${doc.lastModifiedDate}`);
                             channel.assertExchange(exchangeName, 'topic', {durable: true});
                             channel.publish(exchangeName, key, new Buffer(JSON.stringify(amqpMessage)));
-                            console.log(`${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${exchangeName} : ${key}: ${JSON.stringify(amqpMessage)} - dbRecord: ${dbRecord}`);
+                            console.log(`\x1b[32m${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${exchangeName} : ${key}: ${JSON.stringify(amqpMessage)} - dbRecord: ${JSON.stringify(dbRecord)}\x1b[0m`);
                         } else {
-                            debug(`NOT published ${doc.url} - ${(dbRecord) ? dbRecord : 'null'} vs. ${doc.lastModifiedDate}`);
+                            console.log(`\x1b[31mNOT published ${doc.url} - ${(dbRecord) ? dbRecord.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}\x1b[0m`);
                         }
                     });
                 });
