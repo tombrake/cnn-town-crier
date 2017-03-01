@@ -2,6 +2,20 @@
 
 CNN Town Crier is version 2+ of MSS Town Crier.
 
+## 2017-03-01, Version 2.2.0, @jamsyoung
+
+### Notable changes
+
+- Update to Node 7.6.0
+- adjusted logic that determins if content needs to go to the queue or not
+- test environments now have more DBs to talk to (created a REF one)
+
+
+### Commits
+
+* [[`6334bedac2`](https://github.com/cnnlabs/cnn-town-crier/commit/6334bedac2)] - Refresh (Jamie Young) [#3](https://github.com/cnnlabs/cnn-town-crier/pull/3)
+* [[`817d41c349`](https://github.com/cnnlabs/cnn-town-crier/commit/817d41c349)] - **config**: update default mongoConnectionString (Katie Owen)
+
 
 
 ## 2016-06-25, Version 2.1.1, @jamsyoung
