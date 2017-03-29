@@ -2,7 +2,7 @@
 
 CNN Town Crier is version 2+ of MSS Town Crier.
 
-## 2017-03-09, Version 2.3.0, @niahmiah
+## 2017-03-29, Version 2.3.0, @niahmiah
 
 ### Notable changes
 
