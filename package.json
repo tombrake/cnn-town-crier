@@ -1,6 +1,6 @@
 {
   "name": "cnn-town-crier",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "CNN Town Crier",
   "main": "server.js",
   "directories": {
@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "amqplib": "0.5.1",
+    "aws-sdk": "2.25.0",
     "cnn-content-retriever": "1.6.2",
     "cnn-hapi": "0.6.0",
     "debug": "2.6.1",

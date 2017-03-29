@@ -23,6 +23,9 @@ const nconf = require('nconf');
 
 // whitelist environment variables
 nconf.env([
+    'AWS_REGION',
+    'AWS_KEY',
+    'AWS_SECRET',
     'CLOUDAMQP_AUTH',
     'ENVIRONMENT',
     'MONGODB_AUTH',
@@ -39,9 +42,16 @@ if (!nconf.get('ENVIRONMENT') || !nconf.get('PORT') || !nconf.get('CLOUDAMQP_AUT
     process.exit(1);
 }
 
+if (!nconf.get('AWS_KEY') || !nconf.get('AWS_SECRET')) {
+    console.log('AWS_KEY or AWS_SECRET not set. Skipping SNS initialization. Running with RabbitMQ only.');
+}
+
 
 let config = {
     default: {
+        awsRegion: nconf.get('AWS_REGION') || 'us-east-1',
+        awsKey: nconf.get('AWS_KEY'),
+        awsSecret: nconf.get('AWS_SECRET'),
         cloudamqpConnectionString: `amqp://${nconf.get('CLOUDAMQP_AUTH')}@red-rhino.rmq.cloudamqp.com/cnn-towncrier`,
         cloudamqpExchangeName: 'cnn-town-crier',
         mongoDatabase: 'ds023064.mlab.com:23064/cnn-town-crier-dev',

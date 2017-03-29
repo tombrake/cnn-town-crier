@@ -2,6 +2,16 @@
 
 CNN Town Crier is version 2+ of MSS Town Crier.
 
+## 2017-03-09, Version 2.3.0, @niahmiah
+
+### Notable changes
+
+- Add optional support for publishing to SNS topics, for Lambda consumption
+
+### Commits
+
+* [[`3f6be31eeb`](https://github.com/cnnlabs/cnn-town-crier/commit/3f6be31eeb)] - Add optional support for publishing to SNS topics, for Lambda consumption (Ian Patton)
+
 ## 2017-03-01, Version 2.2.0, @jamsyoung
 
 ### Notable changes

@@ -56,5 +56,5 @@ server.route({
 
 server.start(() => {
     console.log(`Hapi server starting at ${server.info.uri}`);
-    require('./tasks/start-rabbit-publisher.js');
+    require('./tasks/retrieve-content.js');
 });

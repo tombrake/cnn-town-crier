@@ -1,7 +1,6 @@
 # CNN Town Crier
 
-A service for listening to CNN content publishes from a variety of sources that
-populates an AMQP exchange.
+A service for listening to CNN content publishes from a variety of sources to AMQP and AWS SNS Topics
 
 [![dependency-status](https://gemnasium.com/cnnlabs/cnn-town-crier.svg)](https://gemnasium.com/cnnlabs/cnn-town-crier)
 [![build-status-master](https://img.shields.io/travis/cnnlabs/cnn-town-crier/master.svg?style=flat-square&label=master)](https://travis-ci.org/cnnlabs/cnn-town-crier)
@@ -17,16 +16,24 @@ Read these "_requirements_" as "_only tested with_".
 
 
 
-## How to get it going
+## How to get it going (AMQP Only)
 
 ```shell
 $ npm install
 $ CLOUDAMQP_AUTH=user:pass MONGODB_AUTH=user:pass npm start
 ```
 
+## Enabling SNS support
+
+To enable SNS support, you have to provide 3 additional environment variables for AWS.
+
+```shell
+$ npm install
+$ CLOUDAMQP_AUTH=user:pass MONGODB_AUTH=user:pass AWS_REGION=us-east-1 AWS_KEY=SomeAwsKey AWS_SECRET=SomeSecretKey npm start
+```
 
 
-## How to write a consumer
+## How to write an AMQP consumer
 
 Town Crier is a PUBLISHER.  For an app to process the items that have been
 published a CONSUMER will need to be implemented.
@@ -38,6 +45,9 @@ There should be no need to configure anything in the CloudAMQP UI.  All
 Exchanges, Queues, and Routing Keys should be created dynamically by Town Crier
 and the consuming app.
 
+## SNS consumers
+
+SNS subscriptions can be consumed as HTTP, Email, SQS, Lambda, etc. Please see AWS SNS documentation.
 
 
 ## ESDoc Documentation
@@ -91,6 +101,12 @@ $ open docs/index.html
 
 - `QUERY_LIMIT` - The number of items of content to query for over 10 seconds.
   Defaults to 10
+
+- `AWS_REGION` - **OPTIONAL** - If not set, defaults to `us-east-1`
+
+- `AWS_KEY` - **OPTIONAL** - If set, along with `AWS_SECRET`, then AWS SNS support will be enabled
+
+- `AWS_SECRET` - **OPTIONAL** - If set, along with `AWS_KEY`, then AWS SNS support will be enabled.
 
 
 
