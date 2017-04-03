@@ -1,6 +1,6 @@
 {
   "name": "cnn-town-crier",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "CNN Town Crier",
   "main": "server.js",
   "directories": {
