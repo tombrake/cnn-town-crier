@@ -1,6 +1,7 @@
 # Authors ordered by first contribution.
 
 James Young <jmeyoung@gmail.com>
+Jamie Young <jamsyoung@users.noreply.github.com>
 Katie Owen <katherine.owen@turner.com>
 niahmiah <niahmiah@users.noreply.github.com>
 
