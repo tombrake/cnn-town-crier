@@ -2,6 +2,18 @@
 
 CNN Town Crier is version 2+ of MSS Town Crier.
 
+## 2017-04-03, Version 2.3.3, @niahmiah
+
+### Notable changes
+
+- Correctly authenticate to SNS
+
+### Commits
+
+* [[`2f2c24e48b`](https://github.com/cnnlabs/cnn-town-crier/commit/2f2c24e48b)] - fix sns auth (Ian Patton) 
+* [[`273ebd6124`](https://github.com/cnnlabs/cnn-town-crier/commit/273ebd6124)] - more SNS debug logging (Ian Patton)
+
+
 ## 2017-03-29, Version 2.3.0, @niahmiah
 
 ### Notable changes
