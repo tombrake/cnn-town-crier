@@ -18,12 +18,15 @@
 
 const amqp = require('../lib/amqp'),
     sns = require('../lib/sns'),
+    messenger = require('../lib/messenger'),
+    Message = require('cnn-messaging').Message,
     debug = require('debug')('cnn-town-crier:start-rabbit-publisher'),
     moment = require('moment'),
     db = require('../lib/mongodb.js'),
     ContentRetriever = require('cnn-content-retriever'),
     cr = new ContentRetriever(),
-    config = require('../config.js');
+    config = require('../config.js'),
+    pkg = require('../package');
 
 
 console.log('Starting Content Retriever');
@@ -34,7 +37,7 @@ console.log(`- Query Data Sources: ${JSON.stringify(config.get('queryDataSources
 console.log(`- Query Content Types: ${JSON.stringify(config.get('queryContentTypes'))}`);
 console.log(`- Query Limit: ${config.get('queryLimit')}`);
 
-Promise.all([amqp.start(), sns.start()])
+Promise.all([amqp.start(), sns.start(), messenger.start()])
 .then(() => {
     setInterval(() => {
         // Defaults:
@@ -73,13 +76,31 @@ Promise.all([amqp.start(), sns.start()])
                     // A datasource with a . in it needs to have all the
                     // dots in it converted to dashes.
                     const key = `${doc.dataSource.replace(/\./g, '-')}.${doc.type}`,
-                        exchangeName = `${config.get('cloudamqpExchangeName')}-${config.get('ENVIRONMENT')}`;
+                        exchangeName = `${config.get('cloudamqpExchangeName')}-${config.get('ENVIRONMENT')}`,
+                        eventMessage = new Message({
+                            context: {
+                                systemId: pkg.name,
+                                environment: config.get('ENVIRONMENT'),
+                                model: doc.type,
+                                objectId: doc.sourceId,
+                                action: 'update'
+                            },
+                            event: {
+                                source: doc.dataSource,
+                                record
+                            }
+                        });
+
+                    if (!dbRecord) {
+                        eventMessage.context.action = 'new';
+                    }
 
                     if (!dbRecord || (dbRecord && (moment(dbRecord.lastModifiedDate).isBefore(doc.lastModifiedDate)))) {
                         console.log(`${(dbRecord) ? dbRecord.lastModifiedDate : null} isBefore ${doc.lastModifiedDate}`);
                         const message = JSON.stringify(record);
                         amqp.channel.publish(exchangeName, key, new Buffer(message));
                         sns.publish(key, message);
+                        messenger.publish(eventMessage.getTopic(), eventMessage);
                         console.log(`\x1b[32m${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${exchangeName} : ${key}: ${JSON.stringify(record)} - dbRecord: ${JSON.stringify(dbRecord)}\x1b[0m`);
                     } else {
                         console.log(`\x1b[31mNOT published ${doc.url} - ${(dbRecord) ? dbRecord.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}\x1b[0m`);
