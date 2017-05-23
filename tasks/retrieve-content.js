@@ -46,30 +46,20 @@ Promise.all([amqp.start(), sns.start()])
         // curl -sS 'http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:100/sort:lastPublishDate' | jq '.docs[] | {dataSource, type, url}'
         cr.getRecentPublishes(config.get('queryLimit'), config.get('queryContentTypes'), config.get('queryDataSources')).then((response) => {
             response.docs.forEach((doc) => {
-                const amqpMessage = {
-                        branding: (doc.attributes) ? doc.attributes.branding : '',
-                        contentType: doc.type,
-                        schemaVersion: '2.1.0',
-                        slug: doc.slug,
-                        sourceId: doc.sourceId,
-                        url: doc.url,
-                        firstPublishDate: doc.firstPublishDate,
-                        lastModifiedDate: doc.lastModifiedDate
-                    },
-                    mongoRecord = {
-                        branding: (doc.attributes) ? doc.attributes.branding : '',
-                        contentType: doc.type,                       // was objectType
-                        firstPublishDate: doc.firstPublishDate,
-                        lastModifiedDate: doc.lastModifiedDate,
-                        schemaVersion: '2.0.0',                      // was Version
-                        slug: doc.slug,
-                        sourceId: doc.sourceId,                      // was sourceID
-                        url: doc.url
-                    };
+                const record = {
+                    branding: (doc.attributes) ? doc.attributes.branding : '',
+                    contentType: doc.type,
+                    schemaVersion: '2.1.0',
+                    slug: doc.slug,
+                    sourceId: doc.sourceId,
+                    url: doc.url,
+                    firstPublishDate: doc.firstPublishDate,
+                    lastModifiedDate: doc.lastModifiedDate
+                };
 
                 db.publishes.findAndModify({
                     query: {sourceId: doc.sourceId},
-                    update: {$set: mongoRecord},
+                    update: {$set: record},
                     new: false,
                     upsert: true
                 }, (error, dbRecord, lastErrorObject) => {
@@ -87,10 +77,10 @@ Promise.all([amqp.start(), sns.start()])
 
                     if (!dbRecord || (dbRecord && (moment(dbRecord.lastModifiedDate).isBefore(doc.lastModifiedDate)))) {
                         console.log(`${(dbRecord) ? dbRecord.lastModifiedDate : null} isBefore ${doc.lastModifiedDate}`);
-                        const message = JSON.stringify(amqpMessage);
+                        const message = JSON.stringify(record);
                         amqp.channel.publish(exchangeName, key, new Buffer(message));
                         sns.publish(key, message);
-                        console.log(`\x1b[32m${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${exchangeName} : ${key}: ${JSON.stringify(amqpMessage)} - dbRecord: ${JSON.stringify(dbRecord)}\x1b[0m`);
+                        console.log(`\x1b[32m${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${exchangeName} : ${key}: ${JSON.stringify(record)} - dbRecord: ${JSON.stringify(dbRecord)}\x1b[0m`);
                     } else {
                         console.log(`\x1b[31mNOT published ${doc.url} - ${(dbRecord) ? dbRecord.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}\x1b[0m`);
                     }
