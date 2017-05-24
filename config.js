@@ -54,6 +54,8 @@ let config = {
         awsSecret: nconf.get('AWS_SECRET'),
         cloudamqpConnectionString: `amqp://${nconf.get('CLOUDAMQP_AUTH')}@red-rhino.rmq.cloudamqp.com/cnn-towncrier`,
         cloudamqpExchangeName: 'cnn-town-crier',
+        amqpConnectionString: `amqp://${nconf.get('CLOUDAMQP_AUTH')}@red-rhino.rmq.cloudamqp.com/${nconf.get('AMQP_VHOST')}`,
+        amqpExchangeName: nconf.get('AMQP_EXCHANGE'),
         mongoDatabase: 'ds023064.mlab.com:23064/cnn-town-crier-dev',
         mongoConnectionString: `${nconf.get('MONGODB_AUTH')}@ds023064.mlab.com:23064/cnn-town-crier-dev`,
         pollingIntervalMS: (nconf.get('POLLING_INTERVAL_MS')) ? parseInt(nconf.get('POLLING_INTERVAL_MS')) : 1000 * 10,
