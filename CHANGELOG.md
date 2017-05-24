@@ -1,6 +1,20 @@
 # CNN Town Crier Changelog
-
 CNN Town Crier is version 2+ of MSS Town Crier.
+
+
+
+## 2017-05-24, Version 2.4.0, @jamsyoung
+
+### Notable changes
+
+- Add support for CNN Messaging
+
+### Commits
+
+* [[`1c2841f891`](https://github.com/cnnlabs/cnn-town-crier/commit/1c2841f891)] - **(SEMVER-MINOR)** Feature/cnn messaging (#6) (niahmiah) [#6](https://github.com/cnnlabs/cnn-town-crier/pull/6)
+
+
+
 
 ## 2017-04-03, Version 2.3.3, @niahmiah
 
