@@ -3,6 +3,14 @@ CNN Town Crier is version 2+ of MSS Town Crier.
 
 
 
+## 2017-05-25, Version 2.4.1, @jamsyoung
+
+### Commits
+* [[`45598927f6`](https://github.com/cnnlabs/cnn-town-crier/commit/45598927f6)] - **(SEMVER-MINOR)** whitelist env vars (#7) (niahmiah) [#7](https://github.com/cnnlabs/cnn-town-crier/pull/7)
+
+
+
+
 ## 2017-05-24, Version 2.4.0, @jamsyoung
 
 ### Notable changes
