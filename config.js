@@ -23,6 +23,8 @@ const nconf = require('nconf');
 
 // whitelist environment variables
 nconf.env([
+    'AMQP_EXCHANGE',
+    'AMQP_VHOST',
     'AWS_REGION',
     'AWS_KEY',
     'AWS_SECRET',
