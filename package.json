@@ -17,7 +17,9 @@
     "start": "ENVIRONMENT=local PORT=5000 node server.js",
     "test": "eslint . && test/validate-json-files.sh",
     "update-apply": "ncu -u",
-    "update-check": "ncu"
+    "update-check": "ncu",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -31,12 +33,13 @@
     "amqplib": "0.5.1",
     "aws-sdk": "2.25.0",
     "cnn-content-retriever": "1.6.2",
-    "cnn-hapi": "0.6.0",
+    "cnn-hapi": "2.0.0",
     "cnn-messaging": "2.1.0",
-    "debug": "2.6.1",
+    "debug": "2.6.9",
     "moment": "2.17.1",
     "mongojs": "2.4.0",
-    "nconf": "0.8.4"
+    "nconf": "0.8.4",
+    "snyk": "^1.42.3"
   },
   "devDependencies": {
     "chai": "3.5.0",
@@ -59,5 +62,6 @@
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/cnnlabs/cnn-town-crier/issues"
-  }
+  },
+  "snyk": true
 }
