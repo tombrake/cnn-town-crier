@@ -87,6 +87,7 @@ Promise.all([amqp.start(), sns.start(), messenger.start()])
                             },
                             event: {
                                 source: doc.dataSource,
+                                section: doc.section,
                                 record
                             }
                         });
