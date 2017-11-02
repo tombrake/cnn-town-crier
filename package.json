@@ -30,7 +30,7 @@
   "dependencies": {
     "amqplib": "0.5.1",
     "aws-sdk": "2.25.0",
-    "cnn-content-retriever": "1.6.2",
+    "cnn-content-retriever": "1.7.0",
     "cnn-hapi": "0.6.0",
     "cnn-messaging": "2.1.0",
     "debug": "2.6.1",
