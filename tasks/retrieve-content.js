@@ -54,6 +54,7 @@ Promise.all([amqp.start(), sns.start(), messenger.start()])
                     contentType: doc.type,
                     schemaVersion: '2.1.0',
                     slug: doc.slug,
+                    id: doc.id,
                     sourceId: doc.sourceId,
                     url: doc.url,
                     firstPublishDate: doc.firstPublishDate,
