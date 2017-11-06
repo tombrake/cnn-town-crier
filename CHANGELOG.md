@@ -2,13 +2,14 @@
 CNN Town Crier is version 2+ of MSS Town Crier.
 
 
-## 2017-11-06
+## 2017-11-06, Version 2.4.3
 
 ### Commits
 
 * [[`38bd5ec2eb`](https://github.com/cnnlabs/cnn-town-crier/commit/38bd5ec2eb)] - Add id to payload (#15) (Tom)
 * [[`09606271d7`](https://github.com/cnnlabs/cnn-town-crier/commit/09606271d7)] - add section to mercury message (#13) (niahmiah)
 * [[`a457543d61`](https://github.com/cnnlabs/cnn-town-crier/commit/a457543d61)] - **fix**: package.json to reduce vulnerabilities (#11) (Snyk bot)
+* [[`92cd7373d8`](https://github.com/cnnlabs/cnn-town-crier/commit/92cd7373d8)] - add branding property (#14) (niahmiah)
 
 
 
