@@ -89,6 +89,7 @@ Promise.all([amqp.start(), sns.start(), messenger.start()])
                                 source: doc.dataSource,
                                 section: doc.section,
                                 id: doc.id,
+                                brading: doc.branding,
                                 record
                             }
                         });
