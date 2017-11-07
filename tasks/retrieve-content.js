@@ -38,79 +38,90 @@ console.log(`- Query Content Types: ${JSON.stringify(config.get('queryContentTyp
 console.log(`- Query Limit: ${config.get('queryLimit')}`);
 
 Promise.all([amqp.start(), sns.start(), messenger.start()])
-.then(() => {
-    setInterval(() => {
-        // Defaults:
-        // queryLimit: 100
-        // queryContentTypes: ['article', 'blogpost', 'gallery', 'image', 'video']
-        // queryDataSources: ['api.greatbigstory.com', 'cnn', 'cnnespanol.cnn.com', 'money']
-        // query URL: http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:10/sort:lastPublishDate
-        // curl: curl -sS 'http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:100/sort:lastPublishDate' | jq .
-        // curl -sS 'http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:100/sort:lastPublishDate' | jq '.docs[] | {dataSource, type, url}'
-        cr.getRecentPublishes(config.get('queryLimit'), config.get('queryContentTypes'), config.get('queryDataSources')).then((response) => {
-            response.docs.forEach((doc) => {
-                const record = {
-                    branding: doc.branding || ((doc.attributes) ? doc.attributes.branding : ''),
-                    contentType: doc.type,
-                    id: doc.id,
-                    schemaVersion: '2.1.1',
-                    slug: doc.slug,
-                    section: doc.section,
-                    sourceId: doc.sourceId,
-                    source: doc.dataSource,
-                    url: doc.url,
-                    firstPublishDate: doc.firstPublishDate,
-                    lastModifiedDate: doc.lastModifiedDate
-                };
+    .then(() => {
+        setInterval(() => {
+            // Defaults:
+            // queryLimit: 100
+            // queryContentTypes: ['article', 'blogpost', 'gallery', 'image', 'video']
+            // queryDataSources: ['api.greatbigstory.com', 'cnn', 'cnnespanol.cnn.com', 'money']
+            // query URL: http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:10/sort:lastPublishDate
+            // curl: curl -sS 'http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:100/sort:lastPublishDate' | jq .
+            // curl -sS 'http://hypatia.api.cnn.com/svc/content/v2/search/collection1/type:article;blogpost;gallery;image;video/dataSource:api.greatbigstory.com;cnn;cnnespanol.cnn.com;money/rows:100/sort:lastPublishDate' | jq '.docs[] | {dataSource, type, url}'
+            cr.getRecentPublishes(config.get('queryLimit'), config.get('queryContentTypes'), config.get('queryDataSources')).then((response) => {
+                response.docs.forEach((doc) => {
+                    const record = {
+                        branding: (doc.attributes) ? doc.attributes.branding : '',
+                        contentType: doc.type,
+                        schemaVersion: '2.1.0',
+                        slug: doc.slug,
+                        sourceId: doc.sourceId,
+                        url: doc.url,
+                        firstPublishDate: doc.firstPublishDate,
+                        lastModifiedDate: doc.lastModifiedDate
+                    };
 
-                db.publishes.findAndModify({
-                    query: {sourceId: doc.sourceId},
-                    update: {$set: record},
-                    new: false,
-                    upsert: true
-                }, (error, dbRecord, lastErrorObject) => {
-                    if (error) {
-                        debug(`Error: ${error}`);
-                        throw error;
-                    }
+                    db.publishes.findAndModify({
+                        query: {sourceId: doc.sourceId},
+                        update: {$set: record},
+                        new: false,
+                        upsert: true
+                    }, (error, dbRecord, lastErrorObject) => {
+                        if (error) {
+                            debug(`Error: ${error}`);
+                            throw error;
+                        }
 
 
-                    // The key format should be [datasource].[contenttype]
-                    // A datasource with a . in it needs to have all the
-                    // dots in it converted to dashes.
-                    const key = `${doc.dataSource.replace(/\./g, '-')}.${doc.type}`,
-                        exchangeName = `${config.get('cloudamqpExchangeName')}-${config.get('ENVIRONMENT')}`,
-                        eventMessage = new Message({
-                            context: {
-                                systemId: pkg.name,
-                                environment: config.get('ENVIRONMENT'),
-                                model: doc.type,
-                                objectId: doc.sourceId,
-                                action: 'update'
-                            },
-                            event: record
-                        });
+                        // The key format should be [datasource].[contenttype]
+                        // A datasource with a . in it needs to have all the
+                        // dots in it converted to dashes.
+                        const key = `${doc.dataSource.replace(/\./g, '-')}.${doc.type}`,
+                            exchangeName = `${config.get('cloudamqpExchangeName')}-${config.get('ENVIRONMENT')}`,
+                            eventMessage = new Message({
+                                context: {
+                                    systemId: pkg.name,
+                                    environment: config.get('ENVIRONMENT'),
+                                    model: doc.type,
+                                    objectId: doc.sourceId,
+                                    action: 'update'
+                                },
+                                event: {
+                                    source: doc.dataSource,
+                                    section: doc.section,
+                                    id: doc.id,
+                                    branding: doc.branding,
+                                    record
+                                }
+                            });
 
-                    if (!dbRecord) {
-                        eventMessage.context.action = 'new';
-                    }
+                        if (!dbRecord) {
+                            eventMessage.context.action = 'new';
+                        }
 
-                    if (!dbRecord || (dbRecord && (moment(dbRecord.lastModifiedDate).isBefore(doc.lastModifiedDate)))) {
-                        console.log(`${(dbRecord) ? dbRecord.lastModifiedDate : null} isBefore ${doc.lastModifiedDate}`);
-                        const message = JSON.stringify(record);
-                        amqp.channel.publish(exchangeName, key, new Buffer(message));
-                        sns.publish(key, message);
-                        messenger.publish(eventMessage.getTopic(), eventMessage);
-                        console.log(`\x1b[32m${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${exchangeName} : ${key}: ${JSON.stringify(record)} - dbRecord: ${JSON.stringify(dbRecord)}\x1b[0m`);
-                    } else {
-                        console.log(`\x1b[31mNOT published ${doc.url} - ${(dbRecord) ? dbRecord.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}\x1b[0m`);
-                    }
+                        if (!dbRecord || (dbRecord && (moment(dbRecord.lastModifiedDate).isBefore(doc.lastModifiedDate)))) {
+                            console.log(`${(dbRecord) ? dbRecord.lastModifiedDate : null} isBefore ${doc.lastModifiedDate}`);
+                            const recordMessage = JSON.stringify(record),
+                                snsMessage = JSON.stringify(Object.assign({}, record,
+                                    {
+                                        source: doc.dataSource,
+                                        section: doc.section,
+                                        id: doc.id,
+                                    }
+                            ));
+
+                            amqp.channel.publish(exchangeName, key, new Buffer(recordMessage));
+                            sns.publish(key, snsMessage);
+                            messenger.publish(eventMessage.getTopic(), eventMessage);
+                            console.log(`\x1b[32m${(lastErrorObject.updatedExisting) ? 'UPDATED' : 'PUBLISHED'}: ${exchangeName} : ${key}: ${JSON.stringify(record)} - dbRecord: ${JSON.stringify(dbRecord)}\x1b[0m`);
+                        } else {
+                            console.log(`\x1b[31mNOT published ${doc.url} - ${(dbRecord) ? dbRecord.lastModifiedDate : 'null'} vs. ${doc.lastModifiedDate}\x1b[0m`);
+                        }
+                    });
                 });
             });
-        });
-    }, config.get('pollingIntervalMS'));
-})
-.catch((err) => {
-    console.error(err);
-    process.exit(1);
-});
+        }, config.get('pollingIntervalMS'));
+    })
+    .catch((err) => {
+        console.error(err);
+        process.exit(1);
+    });
