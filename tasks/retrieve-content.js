@@ -92,7 +92,16 @@ Promise.all([amqp.start(), sns.start(), messenger.start()])
                                     branding: doc.branding,
                                     record
                                 }
-                            });
+                            }),
+                            recordMessage = JSON.stringify(record),
+                            snsMessage = JSON.stringify(Object.assign({}, record,
+                                {
+                                    source: doc.dataSource,
+                                    section: doc.section,
+                                    id: doc.id,
+                                }
+                        ));
+
 
                         if (!dbRecord) {
                             eventMessage.context.action = 'new';
@@ -100,15 +109,6 @@ Promise.all([amqp.start(), sns.start(), messenger.start()])
 
                         if (!dbRecord || (dbRecord && (moment(dbRecord.lastModifiedDate).isBefore(doc.lastModifiedDate)))) {
                             console.log(`${(dbRecord) ? dbRecord.lastModifiedDate : null} isBefore ${doc.lastModifiedDate}`);
-                            const recordMessage = JSON.stringify(record),
-                                snsMessage = JSON.stringify(Object.assign({}, record,
-                                    {
-                                        source: doc.dataSource,
-                                        section: doc.section,
-                                        id: doc.id,
-                                    }
-                            ));
-
                             amqp.channel.publish(exchangeName, key, new Buffer(recordMessage));
                             sns.publish(key, snsMessage);
                             messenger.publish(eventMessage.getTopic(), eventMessage);
