@@ -52,6 +52,7 @@ Promise.all([amqp.start(), sns.start(), messenger.start()])
                 const record = {
                     branding: doc.branding || ((doc.attributes) ? doc.attributes.branding : ''),
                     contentType: doc.type,
+                    id: doc.id,
                     schemaVersion: '2.1.1',
                     slug: doc.slug,
                     section: doc.section,
