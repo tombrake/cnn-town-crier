@@ -50,7 +50,7 @@ Promise.all([amqp.start(), sns.start(), messenger.start()])
             cr.getRecentPublishes(config.get('queryLimit'), config.get('queryContentTypes'), config.get('queryDataSources')).then((response) => {
                 response.docs.forEach((doc) => {
                     const record = {
-                        branding: (doc.attributes) ? doc.attributes.branding : '',
+                        branding: (doc.attributes) ? doc.attributes.branding : doc.branding || '',
                         contentType: doc.type,
                         schemaVersion: '2.1.0',
                         slug: doc.slug,
