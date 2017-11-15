@@ -28,6 +28,9 @@ const amqp = require('../lib/amqp'),
     config = require('../config.js'),
     pkg = require('../package');
 
+if (config.get('hypatia').host) {
+    cr.hypatiaHost = config.get('hypatia').host;
+}
 
 console.log('Starting Content Retriever');
 console.log(`- ENVIRONMENT: ${config.get('ENVIRONMENT')}`);
@@ -36,6 +39,7 @@ console.log(`- Polling Interval: ${config.get('pollingIntervalMS')} milliseconds
 console.log(`- Query Data Sources: ${JSON.stringify(config.get('queryDataSources'))}`);
 console.log(`- Query Content Types: ${JSON.stringify(config.get('queryContentTypes'))}`);
 console.log(`- Query Limit: ${config.get('queryLimit')}`);
+console.log(`- HYPATIA_HOST: ${config.get('hypatia').host}`);
 
 Promise.all([amqp.start(), sns.start(), messenger.start()])
 .then(() => {

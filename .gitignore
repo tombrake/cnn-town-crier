@@ -1,9 +1,13 @@
 .c9
 .idea
-.ignore
+._ignore
 .node*
 .vscode
 coverage
 docs
 node_modules
 npm-debug.log
+docker-compose.yml
+harbor-compose.yml
+hidden.env
+.terraform

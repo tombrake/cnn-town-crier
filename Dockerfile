@@ -1,4 +1,4 @@
-FROM node:6.2.2
+FROM node:9.1.0
 
 ENV ENVIRONMENT=local
 ENV PORT=5000

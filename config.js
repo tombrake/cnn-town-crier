@@ -30,6 +30,7 @@ nconf.env([
     'AWS_SECRET',
     'CLOUDAMQP_AUTH',
     'ENVIRONMENT',
+    'HYPATIA_HOST',
     'MONGODB_AUTH',
     'PORT',
     'QUERY_CONTENT_TYPES',
@@ -37,6 +38,8 @@ nconf.env([
     'QUERY_LIMIT'
 ]);
 
+// load config from file, if it exists
+nconf.file('./._ignore/env.json');
 
 // These are required to be set to start up
 if (!nconf.get('ENVIRONMENT') || !nconf.get('PORT') || !nconf.get('CLOUDAMQP_AUTH') || !nconf.get('MONGODB_AUTH')) {
@@ -58,6 +61,7 @@ let config = {
         cloudamqpExchangeName: 'cnn-town-crier',
         amqpConnectionString: `amqp://${nconf.get('CLOUDAMQP_AUTH')}@red-rhino.rmq.cloudamqp.com/${nconf.get('AMQP_VHOST')}`,
         amqpExchangeName: nconf.get('AMQP_EXCHANGE'),
+        hypatia: {host: nconf.get('HYPATIA_HOST') || undefined},
         mongoDatabase: 'ds023064.mlab.com:23064/cnn-town-crier-dev',
         mongoConnectionString: `${nconf.get('MONGODB_AUTH')}@ds023064.mlab.com:23064/cnn-town-crier-dev`,
         pollingIntervalMS: (nconf.get('POLLING_INTERVAL_MS')) ? parseInt(nconf.get('POLLING_INTERVAL_MS')) : 1000 * 10,
