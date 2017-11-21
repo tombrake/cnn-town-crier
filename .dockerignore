@@ -21,3 +21,6 @@
 ./node_modules/npm-check-updates
 ./test
 ./tools
+
+hidden.env
+.terraform

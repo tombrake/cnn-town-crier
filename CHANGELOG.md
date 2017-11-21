@@ -1,6 +1,23 @@
 # CNN Town Crier Changelog
 CNN Town Crier is version 2+ of MSS Town Crier.
 
+## 2017-11-15, Version 2.5.0, @jamsyoung
+
+### Notable changes
+- Adds `HYPATIA_HOST` environment variable to allow an environment to point to a different hypatia host than the default,
+  which is production.
+
+### Commits
+* [[`5b46a03586`](https://github.com/cnnlabs/cnn-town-crier/commit/5b46a03586)] - **(SEMVER-MINOR)** Support different hypatia environments (#20) (jamie young) [#20](https://github.com/cnnlabs/cnn-town-crier/pull/20)
+
+
+
+
+
+## 2017-11-??, Version 2.4.4, we will never know since the changelog wasn't created for this version
+
+### Commits
+Unknown
 
 ## 2017-11-06, Version 2.4.3
 
